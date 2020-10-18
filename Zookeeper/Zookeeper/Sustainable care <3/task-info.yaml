@@ -178,13 +178,10 @@ files:
     if __name__ == '__main__':
         Zookeeper('zookeeper.zookeeper').run_tests()
   learner_created: false
-- name: exercise.py
-  visible: true
-  learner_created: true
 feedback_link: https://hyperskill.org/projects/98/stages/542/implement
 status: Solved
 feedback:
   message: Congratulations! Continue on <a href="https://hyperskill.org/projects/98/stages/542/implement">JetBrains
     Academy</a>
-  time: Fri, 03 Jul 2020 15:52:32 UTC
-record: -1
+  time: Fri, 03 Jul 2020 17:20:57 UTC
+record: 3
