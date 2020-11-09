@@ -1,16 +1,3 @@
-# credit_principal = 'Credit principal: 1000'
-# final_output = 'The credit has been repaid!'
-# first_month = 'Month 1: paid out 250'
-# second_month = 'Month 2: paid out 250'
-# third_month = 'Month 3: paid out 500'
-
-# write your code here
-# print(credit_principal)
-# print(first_month)
-# print(second_month)
-# print(third_month)
-# print(final_output)
-
 from math import ceil
 from math import log
 import sys
@@ -23,7 +10,42 @@ def annuity_payment(principal, periods, interest):
             (nominal_interest_rate * pow(1 + nominal_interest_rate, periods)) /
             (pow(1 + nominal_interest_rate, periods) - 1))
     )
-    print(f'Your annuity payment = {payment}!')
+    overpayment = (payment * periods) - principal
+    print("Your annuity payment = {0:n}!".format(payment))
+    print("Overpayment = {0:n}".format(overpayment))
+
+
+def annuity_principal(payment, periods, interest):
+    nominal_interest_rate = (interest * 0.01) / 12
+    principal = int(payment / (
+        (nominal_interest_rate * pow(1 + nominal_interest_rate, periods)) /
+        (pow(1 + nominal_interest_rate, periods) - 1)
+    ))
+    overpayment = (payment * periods) - principal
+    print("Your credit principal = {0:n}!".format(principal))
+    print("Overpayment = {0:n}".format(overpayment))
+
+
+def annuity_periods(principal, payment, interest):
+    nominal_interest_rate = (interest * 0.01) / 12
+    periods = ceil(
+        log(payment / (payment - nominal_interest_rate * principal),
+            (1 + nominal_interest_rate)))
+    years = periods // 12
+    months = periods % 12
+    overpayment = (payment * periods) - principal
+    if years < 1:
+        print("You need {0:n} months to repay this credit!".format(months))
+        print("Overpayment = {0:n}".format(overpayment))
+    elif months == 0 and years == 1:
+        print("You need {0:n} year to repay this credit!".format(years))
+        print("Overpayment = {0:n}".format(overpayment))
+    elif months == 0:
+        print("You need {0:n} years to repay this credit!".format(years))
+        print("Overpayment = {0:n}".format(overpayment))
+    else:
+        print("You need {0:n} years and {1:n} months to repay this credit!".format(years, months))
+        print("Overpayment = {0:n}".format(overpayment))
 
 
 args = sys.argv
@@ -46,69 +68,9 @@ args = parser.parse_args()
 if args.type == "diff":
     pass
 elif args.type == "annuity":
-    annuity_payment(args.principal, args.periods, args.interest)
-
-# if args.interest != '' and args.interest < 0:
-#     print('Incorrect parameters')
-# elif args.payment != '' and args.payment < 0:
-#     print('Incorrect parameters')
-# elif args.principal != '' and args.principal < 0:
-#     print('Incorrect parameters')
-# elif args.periods != '' and args.periods < 0:
-#     print('Incorrect parameters')
-
-# print('What do you want to calculate?')
-# print('type "n" - for count of months,')
-# print('type "a" - for annuity payment')
-# print('type "p" - for monthly payment:')
-# payment_type = input()
-
-# if payment_type == 'n':
-#     print('Enter the credit principal:')
-#     credit_principal = int(input())
-#     print('Enter monthly payment:')
-#     monthly_payment = int(input())
-#     print('Enter credit interest:')
-#     credit_interest = float(input()) * 0.01
-#     nominal_interest_rate = credit_interest / 12
-#     count_of_periods = ceil(
-#         log(monthly_payment / (monthly_payment - nominal_interest_rate * credit_principal),
-#             (1 + nominal_interest_rate)))
-#     years = count_of_periods // 12
-#     months = count_of_periods % 12
-#     if years < 1:
-#         print(f'You need {months} months to repay this credit!')
-#     elif months == 0 and years == 1:
-#         print(f'You need {years} year to repay this credit!')
-#     elif months == 0:
-#         print(f'You need {years} years to repay this credit!')
-#     else:
-#         print(f'You need {years} years and {months} months to repay this credit!')
-#
-# elif payment_type == 'a':
-#     print('Enter the credit principal:')
-#     credit_principal = int(input())
-#     print('Enter count of periods:')
-#     counts_of_periods = int(input())
-#     print('Enter credit interest:')
-#     credit_interest = float(input()) * 0.01
-#     nominal_interest_rate = credit_interest / 12
-#     annuity_payment = ceil(credit_principal * (
-#             (nominal_interest_rate * pow(1 + nominal_interest_rate, counts_of_periods)) /
-#             (pow(1 + nominal_interest_rate, counts_of_periods) - 1))
-#     )
-#     print(f'Your annuity payment = {annuity_payment}!')
-#
-# elif payment_type == 'p':
-#     print('Enter monthly payment:')
-#     monthly_payment = float(input())
-#     print('Enter count of periods:')
-#     counts_of_periods = int(input())
-#     print('Enter credit interest:')
-#     credit_interest = float(input()) * 0.01
-#     nominal_interest_rate = credit_interest / 12
-#     credit_principal = monthly_payment / (
-#         (nominal_interest_rate * pow(1 + nominal_interest_rate, counts_of_periods)) /
-#         (pow(1 + nominal_interest_rate, counts_of_periods) - 1)
-#     )
-#     print(f'Your credit principal = {credit_principal}!')
+    if args.principal and args.periods and args.interest:
+        annuity_payment(args.principal, args.periods, args.interest)
+    elif args.payment and args.periods and args.interest:
+        annuity_principal(args.payment, args.periods, args.interest)
+    elif args.principal and args.payment and args.interest:
+        annuity_periods(args.principal, args.payment, args.interest)
