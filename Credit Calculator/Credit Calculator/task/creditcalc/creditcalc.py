@@ -48,6 +48,18 @@ def annuity_periods(principal, payment, interest):
         print("Overpayment = {0:n}".format(overpayment))
 
 
+def diff_payment(principal, periods, interest):
+    nominal_interest_rate = (interest * 0.01) / 12
+    sum_of_payments = 0
+    for month in range(1, periods+1):
+        payment = ceil((principal / periods) + nominal_interest_rate *
+                       (principal - ((principal * (month - 1)) / periods)))
+        sum_of_payments += payment
+        print("Month {0}: payment is {1}".format(month, int(payment)))
+    overpayment = int(sum_of_payments - principal)
+    print("\nOverpayment = {0}".format(overpayment))
+
+
 args = sys.argv
 if len(args) != 5:
     print("Incorrect parameters")
@@ -66,7 +78,7 @@ parser.add_argument("--interest", type=float, help="Is specified without a perce
 args = parser.parse_args()
 
 if args.type == "diff":
-    pass
+    diff_payment(args.principal, args.periods, args.interest)
 elif args.type == "annuity":
     if args.principal and args.periods and args.interest:
         annuity_payment(args.principal, args.periods, args.interest)
@@ -74,3 +86,6 @@ elif args.type == "annuity":
         annuity_principal(args.payment, args.periods, args.interest)
     elif args.principal and args.payment and args.interest:
         annuity_periods(args.principal, args.payment, args.interest)
+else:
+    print("Incorrect parameters")
+    quit()
