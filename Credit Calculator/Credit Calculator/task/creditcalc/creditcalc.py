@@ -77,9 +77,9 @@ parser.add_argument("--periods", type=int, help="Denotes the number of months ne
 parser.add_argument("--interest", type=float, help="Is specified without a percent sign.")
 args = parser.parse_args()
 
-if args.type == "diff":
+if args.type == "diff" and args.interest:
     diff_payment(args.principal, args.periods, args.interest)
-elif args.type == "annuity":
+elif args.type == "annuity" and args.interest:
     if args.principal and args.periods and args.interest:
         annuity_payment(args.principal, args.periods, args.interest)
     elif args.payment and args.periods and args.interest:
