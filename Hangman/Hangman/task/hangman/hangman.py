@@ -13,8 +13,9 @@ while attempts > 0:
     game_word = ''.join(letter if letter in game_word else "-" for letter in chosen_word)
     if letter not in chosen_word:
         print("That letter doesn't appear in the word")
-    attempts -= 1
+        attempts -= 1
+    elif letter not in game_word:
+        print("No improvement")
+        attempts -= 1
 else:
-    print("""
-    Thanks for playing!
-    We'll see how well you did in the next stage""")
+    print("You survived!" if game_word == chosen_word else "You lost!")
