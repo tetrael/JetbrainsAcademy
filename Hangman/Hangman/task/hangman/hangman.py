@@ -10,16 +10,11 @@ game_word = str(''.join(["-" for x in chosen_word[::]]))
 while attempts > 0:
     print('\n' + game_word)
     letter = input("Input a letter: ")
-    if letter in chosen_word:
-        for x in range(len(chosen_word)):
-            if chosen_word[x] == letter:
-                game_word = list(game_word)
-                game_word[x] = letter
-                game_word = str(''.join(game_word))
-    else:
+    game_word = ''.join(letter if letter in game_word else "-" for letter in chosen_word)
+    if letter not in chosen_word:
         print("That letter doesn't appear in the word")
-
     attempts -= 1
 else:
-    print("\nThanks for playing!");
-    print("We'll see how well you did in the next stage")
+    print("""
+    Thanks for playing!
+    We'll see how well you did in the next stage""")
