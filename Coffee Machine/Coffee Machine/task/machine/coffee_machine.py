@@ -85,3 +85,5 @@ class CoffeeMachine:
 
 coffeeMachine = CoffeeMachine()
 coffeeMachine.start()
+
+# Just working :)
