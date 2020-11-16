@@ -12,7 +12,24 @@ class CoffeeMachine:
         self.cups = cups if cups is not None else 9
         self.money = money if money is not None else 550
 
-    def update_state(self, coffee_type):
+    def check_state(self, coffee_type):
+        if self.water < self.coffeeTypes[coffee_type]['water']:
+            print("Sorry, not enough water!")
+            return False
+        elif self.milk < self.coffeeTypes[coffee_type]['milk']:
+            print("Sorry, not enough milk!")
+            return False
+        elif self.beans < self.coffeeTypes[coffee_type]['beans']:
+            print("Sorry, not enough coffee beans!")
+            return False
+        elif self.cups < 1:
+            print("Sorry, not enough disposable cups of coffee!")
+            return False
+        else:
+            print("I have enough resources, making you a coffee!")
+            return True
+
+    def make_coffee(self, coffee_type):
         self.water -= self.coffeeTypes[coffee_type]['water']
         self.milk -= self.coffeeTypes[coffee_type]['milk']
         self.beans -= self.coffeeTypes[coffee_type]['beans']
@@ -30,7 +47,7 @@ class CoffeeMachine:
         self.money = 0
 
     def print_state(self):
-        print("The coffee machine has:")
+        print('\n' + "The coffee machine has:")
         print("{} of water".format(self.water))
         print("{} of milk".format(self.milk))
         print("{} of coffee beans".format(self.beans))
@@ -39,8 +56,9 @@ class CoffeeMachine:
 
     def choose_action(self, action):
         if action == "buy":
-            coffee_type = int(input("What do want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:" + '\n'))
-            self.update_state(coffee_type)
+            coffee_type = int(input('\n' + "What do want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:" + '\n'))
+            if self.check_state(coffee_type):
+                self.make_coffee(coffee_type)
         elif action == "fill":
             water = int(input("Write how many ml of water do you want to add:" + '\n'))
             milk = int(input("Write how many ml of milk do you want to add:" + '\n'))
@@ -53,9 +71,9 @@ class CoffeeMachine:
             self.print_state()
 
     def start(self):
-        action = str(input("Write action (buy, fill, take, remaining, exit):" + '\n'))
+        action = str(input('\n' + "Write action (buy, fill, take, remaining, exit):" + '\n'))
         while action != "exit":
-            action = str(input("Write action (buy, fill, take, remaining, exit):" + '\n'))
+            action = str(input('\n' + "Write action (buy, fill, take, remaining, exit):" + '\n'))
             self.choose_action(action)
 
 
