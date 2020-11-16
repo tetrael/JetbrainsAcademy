@@ -1,10 +1,25 @@
-water_per_cup = int(200)
-milk_per_cup = int(50)
-coffee_beans_per_cup = int(15)
+import math
 
-print("Write how many cups of coffee you will need:")
-coffee_cups = int(input())
-print("For {} cups of coffee you will need:".format(coffee_cups))
-print("{} ml of water".format(coffee_cups * water_per_cup))
-print("{} ml of milk".format(coffee_cups * milk_per_cup))
-print("{} g of coffee beans".format(coffee_cups * coffee_beans_per_cup))
+water = int(input("Write how many ml of water the coffee machine has:" + '\n'))
+milk = int(input("Write how many ml of milk the coffee machine has:" + '\n'))
+coffee_beans = int(input("Write how many grams of coffee the coffee machine has:" + '\n'))
+requested_cups = int(input("Write how many cups of coffee you will need:" + '\n'))
+
+water_portions = math.floor(water / 200)
+milk_portions = math.floor(milk / 50)
+beans_portions = math.floor(coffee_beans / 15)
+
+# print(water_portions)
+# print(milk_portions)
+# print(beans_portions)
+
+max_portions = min(list([water_portions, milk_portions, beans_portions]))
+
+# print(max_portions)
+
+if requested_cups == max_portions:
+    print("Yes, I can make that amount of coffee")
+elif requested_cups < max_portions:
+    print("Yes, I can make that amount of coffee (and even {} more than that)".format(max_portions - requested_cups))
+else:
+    print("No, I can make only {} cups of coffee".format(max_portions))
