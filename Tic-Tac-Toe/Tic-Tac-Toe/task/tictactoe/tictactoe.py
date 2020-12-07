@@ -1,9 +1,10 @@
-class Board:
-    acceptable_chars = ('X', 'O')
-    symbols = list(['_', '_', '_', '_', '_', '_', '_', '_', '_'])
+class TicTacToe:
+    players = ('X', 'O')
+    board = list(" " * 9)
     symbol = 'X'
 
-    def select_index(self, coordinates):
+    @staticmethod
+    def select_index(coordinates):
         index = 0
         if int(coordinates[1]) == 1:
             index = int(coordinates[0]) + 5
@@ -16,28 +17,22 @@ class Board:
     def change_symbol(self):
         self.symbol = 'O' if self.symbol == 'X' else 'X'
 
-    def check_who_wins(self, char):
-        # Checking if there are characters in a horizontal line
-        if self.symbols[0] == char and self.symbols[1] == char and self.symbols[2] == char:
-            return True
-        elif self.symbols[3] == char and self.symbols[4] == char and self.symbols[5] == char:
-            return True
-        elif self.symbols[6] == char and self.symbols[7] == char and self.symbols[8] == char:
-            return True
-        # Checking if there are characters in a vertical line
-        elif self.symbols[0] == char and self.symbols[3] == char and self.symbols[6] == char:
-            return True
-        elif self.symbols[1] == char and self.symbols[4] == char and self.symbols[7] == char:
-            return True
-        elif self.symbols[2] == char and self.symbols[5] == char and self.symbols[8] == char:
-            return True
-        # Checking if there are characters in a diagonal line
-        elif self.symbols[0] == char and self.symbols[4] == char and self.symbols[8] == char:
-            return True
-        elif self.symbols[2] == char and self.symbols[4] == char and self.symbols[6] == char:
-            return True
-        else:
-            return False
+    @staticmethod
+    def who_wins(board, player):
+        win_state = [
+            # Checking if there are characters in a horizontal line
+            [board[0], board[1], board[2]],
+            [board[3], board[4], board[5]],
+            [board[6], board[7], board[8]],
+            # Checking if there are characters in a vertical line
+            [board[0], board[3], board[6]],
+            [board[1], board[4], board[7]],
+            [board[2], board[5], board[8]],
+            # Checking if there are characters in a diagonal line
+            [board[0], board[4], board[8]],
+            [board[2], board[4], board[6]],
+        ]
+        return [player, player, player] in win_state
 
     def take_coordinates(self):
         coordinates = str(input("Enter the coordinates: ")).split()
@@ -49,40 +44,40 @@ class Board:
                 or int(coordinates[1]) not in [1, 2, 3]:
             print("Coordinates should be from 1 to 3!")
             self.take_coordinates()
-        elif self.symbols[self.select_index(coordinates)] != '_':
+        elif self.board[self.select_index(coordinates)] != ' ':
             print("This cell is occupied! Choose another one!")
             self.take_coordinates()
         else:
-            self.symbols[self.select_index(coordinates)] = self.symbol
-            self.print_board(self.symbols)
+            self.board[self.select_index(coordinates)] = self.symbol
+            self.print_board(self.board)
             self.change_symbol()
 
     def game_finish(self):
-        if abs(self.symbols.count('X') - self.symbols.count('O')) not in [0, 1] \
-                or (self.check_who_wins('X') and self.check_who_wins('O')):
+        if abs(self.board.count('X') - self.board.count('O')) not in [0, 1] \
+                or (self.who_wins(self.board, self.players[0])
+                    and self.who_wins(self.board, self.players[1])):
             print("Impossible")
             return True
-        elif self.check_who_wins('X'):
+        elif self.who_wins(self.board, self.players[0]):
             print("X wins")
             return True
-        elif self.check_who_wins('O'):
+        elif self.who_wins(self.board, self.players[1]):
             print("O wins")
             return True
-        # elif self.symbols.count('_') > 0:
-        #     print("Game not finished")
-        #     return True
-        elif self.symbols.count('X') > 4 and self.symbols.count('O') > 3 and \
-                not self.check_who_wins('X') and not self.check_who_wins('O'):
+        elif self.board.count('X') > 4 and self.board.count('O') > 3 \
+                and not self.who_wins(self.board, self.players[0]) \
+                and not self.who_wins(self.board, self.players[1]):
             print("Draw")
             return True
         else:
             return False
 
-    def print_board(self, chars):
+    @staticmethod
+    def print_board(chars):
         print("---------\r| {} {} {} |\r| {} {} {} |\r| {} {} {} |\r---------".format(*chars))
 
 
-board = Board()
-board.print_board(board.symbols)
-while not board.game_finish():
-    board.take_coordinates()
+game = TicTacToe()
+game.print_board(game.board)
+while not game.game_finish():
+    game.take_coordinates()
