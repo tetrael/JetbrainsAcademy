@@ -26,23 +26,54 @@ def check_who_wins(char):
         return False
 
 
+def select_index(coordinates):
+    index = 0
+    if int(coordinates[1]) == 1:
+        index = int(coordinates[0]) + 5
+    elif int(coordinates[1]) == 2:
+        index = int(coordinates[0]) + 2
+    elif int(coordinates[1]) == 3:
+        index = int(coordinates[0]) - 1
+    return index
+
+
+def take_coordinates():
+    coordinates = str(input("Enter the coordinates: ")).split()
+    if not coordinates[0].isnumeric() \
+            or not coordinates[1].isnumeric():
+        print("You should enter numbers!")
+        take_coordinates()
+    elif int(coordinates[0]) not in [1, 2, 3] \
+            or int(coordinates[1]) not in [1, 2, 3]:
+        print("Coordinates should be from 1 to 3!")
+        take_coordinates()
+    elif symbols[select_index(coordinates)] != '_':
+        print("This cell is occupied! Choose another one!")
+        take_coordinates()
+    else:
+        symbols[select_index(coordinates)] = 'X'
+        print_board(symbols)
+
+
+def print_board(chars):
+    print("---------\r| {} {} {} |\r| {} {} {} |\r| {} {} {} |\r---------".format(*chars))
+
+
 for x in str(input("Enter cells: ")):
     symbols.append(x if x in acceptable_chars else '')
 
-print("""---------
-| {} {} {} |
-| {} {} {} |
-| {} {} {} |
----------""".format(*symbols))
+print_board(symbols)
 
-if abs(symbols.count('X') - symbols.count('O')) not in [0, 1] \
-        or (check_who_wins('X') and check_who_wins('O')):
-    print("Impossible")
-elif check_who_wins('X'):
-    print("X wins")
-elif check_who_wins('O'):
-    print("O wins")
-elif symbols.count('_') > 0:
-    print("Game not finished")
-elif not check_who_wins('X') and not check_who_wins('O'):
-    print("Draw")
+take_coordinates()
+
+# if abs(symbols.count('X') - symbols.count('O')) not in [0, 1] \
+#         or (check_who_wins('X') and check_who_wins('O')):
+#     print("Impossible")
+# elif check_who_wins('X'):
+#     print("X wins")
+# elif check_who_wins('O'):
+#     print("O wins")
+# elif symbols.count('_') > 0:
+#     print("Game not finished")
+# elif not check_who_wins('X') and not check_who_wins('O'):
+#     print("Draw")
