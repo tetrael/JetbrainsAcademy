@@ -30,20 +30,15 @@ class BankCard:
 
     @staticmethod
     def checksum(checksum):
-        checksum = list(checksum)
-        checksum = [int(x) for x in checksum]
-
         if len(checksum) > 15:
             del checksum[-1]
 
-        checksum = checksum[::-1]
+        evens = list(int(_) for _ in checksum[1::2])
+        odds = list(int(_) * 2 for _ in checksum[::2])
+        odds = [x - 9 if x > 9 else x for x in odds]
 
-        for x in range(0, len(checksum), 2):
-            checksum[x] *= 2
+        checksum = sum(evens) + sum(odds)
 
-        checksum = [x - 9 if x > 9 else x for x in checksum]
-        checksum = sum(checksum)
         for x in range(10):
             if (checksum + x) % 10 == 0:
-                print(x)
                 return str(x)
