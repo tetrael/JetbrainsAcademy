@@ -1,15 +1,41 @@
 import string
 import secrets
+import sqlite3
+from sqlite3 import Error
 
 
 class BankCard:
     def __init__(self):
+        self.db_connection = None
+        self.create_db_connection()
+        self.create_table_for_cards()
         self.pin = self.generate_pin()
         self.identifiers = self.generate_identifiers()
         self.number = self.card_number()
         print("Your card has been created")
         print("Your card number:\n" + self.number)
         print("Your card PIN:\n" + self.pin + "\n")
+
+    def __del__(self):
+        self.db_connection.close()
+
+    def create_db_connection(self):
+        try:
+            self.db_connection = sqlite3.connect('cards.s3db')
+        except Error as e:
+            print(e)
+        finally:
+            self.db_connection.close()
+
+    def create_table_for_cards(self):
+        cursor = self.db_connection.cursor()
+        sql_query = """ CREATE TABLE IF NOT EXISTS cards(
+                                    id integer primary key,
+                                    number text NOT NULL,
+                                    pin text NOT NULL,
+                                    balance integer DEFAULT 0
+                                );"""
+        cursor.execute(sql_query)
 
     @staticmethod
     def generate_pin():
