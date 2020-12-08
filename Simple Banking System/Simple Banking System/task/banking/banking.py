@@ -1,4 +1,5 @@
-from .Bank import Bank
+from Bank import *
+
 
 bank = Bank()
 bank.menu()

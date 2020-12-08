@@ -6,7 +6,7 @@ class BankCard:
     def __init__(self):
         self.pin = self.generate_pin()
         self.identifiers = self.generate_identifiers()
-        self.number = self.number()
+        self.number = self.card_number()
         print("Your card has been created")
         print("Your card number:\n" + self.number)
         print("Your card PIN:\n" + self.pin + "\n")
@@ -15,15 +15,28 @@ class BankCard:
     def generate_pin():
         return ''.join(secrets.choice(string.digits) for i in range(4))
 
-    @staticmethod
-    def generate_identifiers():
-        number = dict()
-        number["IIN"] = '400000'
-        number["Account Identifier"] = ''.join(secrets.choice(string.digits) for i in range(9))
-        number["Checksum"] = ''.join(secrets.choice(string.digits) for i in range(1))
-        return number
+    def generate_identifiers(self):
+        self.number = dict()
+        self.number["IIN"] = '400000'
+        self.number["Account Identifier"] = ''.join(secrets.choice(string.digits) for i in range(9))
+        self.number["Checksum"] = self.checksum(str(self.number["IIN"]
+                                                    + self.number["Account Identifier"]))
+        return self.number
 
-    def number(self):
+    def card_number(self):
         return str(self.identifiers["IIN"] +
                    self.identifiers["Account Identifier"] +
                    self.identifiers["Checksum"])
+
+    @staticmethod
+    def checksum(checksum):
+        checksum = list(checksum)
+        checksum = [int(x) for x in checksum]
+        if len(checksum) > 15:
+            del checksum[-1]
+        checksum = [x * 2 if x % 2 == 0 else x for x in checksum]
+        checksum = [x - 9 if x > 9 else x for x in checksum]
+        checksum = sum(checksum)
+        for x in range(10):
+            if (checksum + x) % 10 == 0:
+                return str(x)
