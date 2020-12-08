@@ -4,13 +4,30 @@ import secrets
 
 class Bank:
     def __init__(self):
-        pass
+        self.accounts = []
 
     @staticmethod
-    def main_menu():
+    def print_main_menu():
         print("1. Create an account")
         print("2. Log into account")
         print("0. Exit")
+
+    @staticmethod
+    def print_login_menu():
+        print("1. Balance")
+        print("2. Log out")
+        print("0. Exit")
+
+    def menu(self):
+        self.print_main_menu()
+        while True:
+            menuitem = int(input())
+            if menuitem == 1:
+                self.accounts.append(BankAccount())
+            elif menuitem == 2:
+                pass
+            elif menuitem == 0:
+                break
 
 
 class BankAccount:
@@ -52,4 +69,5 @@ class BankCard:
                    self.number["Checksum"])
 
 
-card = BankCard()
+bank = Bank()
+bank.menu()
