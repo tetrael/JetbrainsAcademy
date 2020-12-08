@@ -5,6 +5,7 @@ import secrets
 class Bank:
     def __init__(self):
         self.accounts = []
+        self.menuexit = False
 
     @staticmethod
     def print_main_menu():
@@ -19,15 +20,39 @@ class Bank:
         print("0. Exit")
 
     def menu(self):
-        self.print_main_menu()
-        while True:
+        while not self.menuexit:
+            self.print_main_menu()
             menuitem = int(input())
             if menuitem == 1:
                 self.accounts.append(BankAccount())
             elif menuitem == 2:
-                pass
-            elif menuitem == 0:
+                if self.login():
+                    while True:
+                        self.print_login_menu()
+                        menuitem = int(input())
+                        if menuitem == 1:
+                            print("Balance: 0")
+                            pass
+                        elif menuitem == 2:
+                            print("You have successfully logged out!")
+                            break
+                        elif menuitem == 0:
+                            self.menuexit = True
+                            print("Bye!")
+                            break
+                else:
+                    print("Wrong card number or PIN!")
+            elif menuitem == 0 or self.menuexit:
+                print("Bye!")
                 break
+
+    def login(self):
+        account = input("Enter your card number:\n")
+        pin = input("Enter your PIN:\n")
+        if account in self.accounts:
+            return True
+        else:
+            return False
 
 
 class BankAccount:
@@ -36,11 +61,6 @@ class BankAccount:
     def __init__(self):
         self.card = BankCard()
         BankAccount.accounts.append(self.card)
-
-    @staticmethod
-    def login():
-        account = input("Enter your card number:\n")
-        pin = input("Enter your PIN:\n")
 
 
 class BankCard:
