@@ -46,13 +46,13 @@ class Database:
                         + ");"
             cursor.execute(sql_query)
             self.db_connection.commit()
-            cursor.execute("SELECT * FROM card")
-            for row in cursor:
-                print(row[0])
-                print(row[1])
-                print(row[2])
-                print(row[3])
-                print('\n')
+            # cursor.execute("SELECT * FROM card")
+            # for row in cursor:
+            #     print(row[0])
+            #     print(row[1])
+            #     print(row[2])
+            #     print(row[3])
+            #     print('\n')
         except Error as e:
             print(e)
         finally:
