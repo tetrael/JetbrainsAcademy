@@ -7,6 +7,7 @@ class Bank:
         self.db_conn = db_conn
         self.cursor = self.db_conn.cursor()
         self.menu_exit = False
+        self.chosen_account = None # For login purpose
 
     @staticmethod
     def print_main_menu():
@@ -40,11 +41,21 @@ class Bank:
                         self.print_login_menu()
                         menu_item = int(input())
                         if menu_item == 1:
-                            print("Balance: 0\n")
-                            pass
+                            sql_query = f"""SELECT * FROM card 
+                                            WHERE number = {self.chosen_account[0]} 
+                                            AND pin = {self.chosen_account[1]}"""
+                            self.cursor.execute(sql_query)
+                            balance = self.cursor.fetchone()
+                            print(f"Balance: {balance[3]}\n")
                         elif menu_item == 2:
-                            print("Not implemented yet!\n")
-                            pass
+                            income = int(input("Enter income:"))
+                            sql_query = f"""UPDATE card 
+                                            SET balance = {income}
+                                            WHERE number = {self.chosen_account[0]}
+                                            AND pin = {self.chosen_account[1]}"""2
+                            self.cursor.execute(sql_query)
+                            self.db_conn.commit()
+                            print("Income was added!\n")
                         elif menu_item == 3:
                             print("Not implemented yet!\n")
                             pass
@@ -52,6 +63,7 @@ class Bank:
                             print("Not implemented yet!\n")
                             pass
                         elif menu_item == 5:
+                            self.chosen_account = None
                             print("You have successfully logged out!\n")
                             break
                         elif menu_item == 0:
@@ -72,9 +84,12 @@ class Bank:
         number = input("Enter your card number:\n")
         pin = input("Enter your PIN:\n")
 
-        for account in self.accounts:
-            for card in account.cards:
-                if card.number == number and card.pin == pin:
+        self.cursor.execute("SELECT * FROM card")
+        accounts = self.cursor.fetchall()
+
+        for account in accounts:
+                if account[1] == number and account[2] == pin:
+                    self.chosen_account = (account[1], account[2])
                     print("You have successfully logged in!\n")
                     return True
         else:

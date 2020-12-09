@@ -3,10 +3,10 @@ import secrets
 
 
 class BankAccount:
-    def __init__(self):
-        self.pin = self.generate_pin()
-        self.identifiers = self.generate_identifiers()
-        self.number = self.card_number()
+    def __init__(self, number=None, pin=None):
+        self.pin = self.generate_pin() if pin is None else pin
+        self.identifiers = self.generate_identifiers() if number is None else None
+        self.number = self.card_number() if number is None else number
         print("Your card has been created")
         print("Your card number:\n" + self.number)
         print("Your card PIN:\n" + self.pin + "\n")
