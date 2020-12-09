@@ -19,7 +19,7 @@ class BankAccount:
         self.number = dict()
         self.number["IIN"] = '400000'
         self.number["Account Identifier"] = ''.join(secrets.choice(string.digits) for i in range(9))
-        self.number["Checksum"] = self.checksum(str(self.number["IIN"]
+        self.number["Checksum"] = self.calculate_checksum(str(self.number["IIN"]
                                                     + self.number["Account Identifier"]))
         return self.number
 
@@ -29,16 +29,18 @@ class BankAccount:
                    self.identifiers["Checksum"])
 
     @staticmethod
-    def checksum(checksum):
-        if len(checksum) > 15:
-            del checksum[-1]
-
-        evens = list(int(_) for _ in checksum[1::2])
-        odds = list(int(_) * 2 for _ in checksum[::2])
+    def calculate_checksum(card_number):
+        evens = list(int(_) for _ in card_number[1::2])
+        odds = list(int(_) * 2 for _ in card_number[::2])
         odds = [x - 9 if x > 9 else x for x in odds]
-
         checksum = sum(evens) + sum(odds)
-
         for x in range(10):
             if (checksum + x) % 10 == 0:
                 return str(x)
+
+    def check_card_number(self, card_number):
+        card_number = list(card_number)
+        current_checksum = int(card_number[-1])
+        del card_number[-1]
+        calculated_checksum = int(self.calculate_checksum(card_number))
+        return True if calculated_checksum == current_checksum else False

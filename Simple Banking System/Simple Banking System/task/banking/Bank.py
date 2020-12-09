@@ -30,11 +30,7 @@ class Bank:
             self.print_main_menu()
             menu_item = int(input())
             if menu_item == 1:
-                account = BankAccount()
-                sql_query = f"INSERT INTO card (number, pin) VALUES( " \
-                                + account.number + "," + account.pin + ");"
-                self.cursor.execute(sql_query)
-                self.db_conn.commit()
+                self.insert_card()
             elif menu_item == 2:
                 if self.login():
                     while True:
@@ -43,12 +39,11 @@ class Bank:
                         if menu_item == 1:
                             print(f"Balance: {self.check_current_balance()}\n")
                         elif menu_item == 2:
-                            balance = self.check_current_balance()
-                            income = int(input("Enter income:\n")) + int(balance)
+                            income = int(input("Enter income:\n"))
                             self.increase_balance(income)
+                            print("Income was added!\n")
                         elif menu_item == 3:
-                            print("Not implemented yet!\n")
-                            pass
+                            self.do_transfer()
                         elif menu_item == 4:
                             print("Not implemented yet!\n")
                             pass
@@ -85,6 +80,13 @@ class Bank:
         else:
             return False
 
+    def insert_card(self):
+        account = BankAccount()
+        sql_query = f"INSERT INTO card (number, pin) VALUES( " \
+                    + account.number + "," + account.pin + ");"
+        self.cursor.execute(sql_query)
+        self.db_conn.commit()
+
     def check_current_balance(self):
         sql_query = f"""SELECT * FROM card 
                         WHERE number = {self.chosen_account[0]} 
@@ -94,10 +96,40 @@ class Bank:
         return balance[3]
 
     def increase_balance(self, income):
+        balance = int(self.check_current_balance())
         sql_query = f"""UPDATE card 
-                        SET balance = {income}
-                        WHERE number = {self.chosen_account[0]}
-                        AND pin = {self.chosen_account[1]}"""
+                        SET balance = {income + balance}
+                        WHERE number = {self.chosen_account[0]}"""
         self.cursor.execute(sql_query)
         self.db_conn.commit()
-        print("Income was added!\n")
+
+    def decrease_balance(self, from_account, outcome):
+        balance = int(self.check_current_balance())
+        sql_query = f"""UPDATE card 
+                        SET balance = {balance - outcome}
+                        WHERE number = {from_account}"""
+        self.cursor.execute(sql_query)
+        self.db_conn.commit()
+
+    def is_card_in_database(self, card_number):
+        sql_query = f"SELECT * FROM card WHERE number = {card_number}"
+        self.cursor.execute(sql_query)
+        result = self.cursor.fetchone()
+        return True if result[1] == card_number else False
+
+    def do_transfer(self):
+        card_number = input("Enter card number:\n")
+        account_to = BankAccount(card_number)
+        account_from = BankAccount(self.chosen_account[0], self.chosen_account[1])
+        if account_to.check_card_number(card_number):  # Check is card number is correct
+            if self.is_card_in_database(card_number):
+                amount_to_transfer = int(input("Enter how much money you want to transfer:\n"))
+                if self.check_current_balance() >= amount_to_transfer:
+                    self.decrease_balance(self.chosen_account[0], amount_to_transfer)
+                    self.increase_balance(amount_to_transfer)
+                else:
+                    print("Not enough money!")
+            else:
+                print("Such a card does not exist.")
+        else:
+            print("Probably you made a mistake in the card number. Please try again!")
