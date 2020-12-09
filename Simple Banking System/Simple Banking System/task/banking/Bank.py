@@ -1,20 +1,23 @@
 from BankAccount import BankAccount
+import sqlite3
 
 
 class Bank:
-    def __init__(self):
-        self.accounts = []
+    def __init__(self, db_conn):
+        self.db_conn = db_conn
+        self.cursor = self.db_conn.cursor()
         self.menu_exit = False
 
     @staticmethod
     def print_main_menu():
-        print("1. Create an account")
+        print("\n1. Create an account")
         print("2. Log into account")
+        print("3. Show database")
         print("0. Exit\n")
 
     @staticmethod
     def print_login_menu():
-        print("1. Balance")
+        print("\n1. Balance")
         print("2. Add income")
         print("3. Do transfer")
         print("4. Close account")
@@ -26,7 +29,11 @@ class Bank:
             self.print_main_menu()
             menu_item = int(input())
             if menu_item == 1:
-                self.accounts.append(BankAccount())
+                account = BankAccount()
+                sql_query = f"INSERT INTO card (number, pin) VALUES( " \
+                                + account.number + "," + account.pin + ");"
+                self.cursor.execute(sql_query)
+                self.db_conn.commit()
             elif menu_item == 2:
                 if self.login():
                     while True:
@@ -53,6 +60,10 @@ class Bank:
                             break
                 else:
                     print("Wrong card number or PIN!\n")
+            elif menu_item == 3:
+                self.cursor.execute("SELECT * FROM card")
+                for row in self.cursor:
+                    print(f"ID: {row[0]} No.: {row[1]} PIN: {row[2]} Balance: {row[3]}")
             elif menu_item == 0 or self.menu_exit:
                 print("Bye!")
                 break
