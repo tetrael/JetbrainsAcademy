@@ -15,7 +15,10 @@ class Bank:
     @staticmethod
     def print_login_menu():
         print("1. Balance")
-        print("2. Log out")
+        print("2. Add income")
+        print("3. Do transfer")
+        print("4. Close account")
+        print("5. Log out")
         print("0. Exit\n")
 
     def menu(self):
@@ -33,6 +36,15 @@ class Bank:
                             print("Balance: 0\n")
                             pass
                         elif menu_item == 2:
+                            print("Not implemented yet!\n")
+                            pass
+                        elif menu_item == 3:
+                            print("Not implemented yet!\n")
+                            pass
+                        elif menu_item == 4:
+                            print("Not implemented yet!\n")
+                            pass
+                        elif menu_item == 5:
                             print("You have successfully logged out!\n")
                             break
                         elif menu_item == 0:
