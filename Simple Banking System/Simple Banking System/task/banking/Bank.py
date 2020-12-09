@@ -14,7 +14,7 @@ class Bank:
         print("\n1. Create an account")
         print("2. Log into account")
         print("3. Show database")
-        print("0. Exit\n")
+        print("0. Exit")
 
     @staticmethod
     def print_login_menu():
@@ -23,7 +23,7 @@ class Bank:
         print("3. Do transfer")
         print("4. Close account")
         print("5. Log out")
-        print("0. Exit\n")
+        print("0. Exit")
 
     def menu(self):
         while not self.menu_exit:
@@ -41,21 +41,11 @@ class Bank:
                         self.print_login_menu()
                         menu_item = int(input())
                         if menu_item == 1:
-                            sql_query = f"""SELECT * FROM card 
-                                            WHERE number = {self.chosen_account[0]} 
-                                            AND pin = {self.chosen_account[1]}"""
-                            self.cursor.execute(sql_query)
-                            balance = self.cursor.fetchone()
-                            print(f"Balance: {balance[3]}\n")
+                            print(f"Balance: {self.check_current_balance()}\n")
                         elif menu_item == 2:
-                            income = int(input("Enter income:"))
-                            sql_query = f"""UPDATE card 
-                                            SET balance = {income}
-                                            WHERE number = {self.chosen_account[0]}
-                                            AND pin = {self.chosen_account[1]}"""2
-                            self.cursor.execute(sql_query)
-                            self.db_conn.commit()
-                            print("Income was added!\n")
+                            balance = self.check_current_balance()
+                            income = int(input("Enter income:\n")) + int(balance)
+                            self.increase_balance(income)
                         elif menu_item == 3:
                             print("Not implemented yet!\n")
                             pass
@@ -64,14 +54,14 @@ class Bank:
                             pass
                         elif menu_item == 5:
                             self.chosen_account = None
-                            print("You have successfully logged out!\n")
+                            print("You have successfully logged out!")
                             break
                         elif menu_item == 0:
                             self.menu_exit = True
                             print("Bye!")
                             break
                 else:
-                    print("Wrong card number or PIN!\n")
+                    print("Wrong card number or PIN!")
             elif menu_item == 3:
                 self.cursor.execute("SELECT * FROM card")
                 for row in self.cursor:
@@ -94,3 +84,20 @@ class Bank:
                     return True
         else:
             return False
+
+    def check_current_balance(self):
+        sql_query = f"""SELECT * FROM card 
+                        WHERE number = {self.chosen_account[0]} 
+                        AND pin = {self.chosen_account[1]}"""
+        self.cursor.execute(sql_query)
+        balance = self.cursor.fetchone()
+        return balance[3]
+
+    def increase_balance(self, income):
+        sql_query = f"""UPDATE card 
+                        SET balance = {income}
+                        WHERE number = {self.chosen_account[0]}
+                        AND pin = {self.chosen_account[1]}"""
+        self.cursor.execute(sql_query)
+        self.db_conn.commit()
+        print("Income was added!\n")
