@@ -58,6 +58,7 @@ class Bank:
                 else:
                     print("Wrong card number or PIN!")
             elif menu_item == 3:
+                # self.insert_card('3000003972196503','0000')  # for testing purposes
                 self.cursor.execute("SELECT * FROM card")
                 for row in self.cursor:
                     print(f"ID: {row[0]} No.: {row[1]} PIN: {row[2]} Balance: {row[3]}")
@@ -80,8 +81,8 @@ class Bank:
         else:
             return False
 
-    def insert_card(self):
-        card = Card()
+    def insert_card(self, number=None, pin=None):
+        card = Card(number, pin)
         sql_query = f"INSERT INTO card (number, pin) VALUES( '" \
                     + card.number + "','" + card.pin + "');"
         self.cursor.execute(sql_query)
@@ -114,7 +115,7 @@ class Bank:
         sql_query = f"SELECT * FROM card WHERE number = {card_number}"
         self.cursor.execute(sql_query)
         result = self.cursor.fetchone()
-        return True if result[1] == card_number else False
+        return False if result is None or result[1] != card_number else True
 
     def do_transfer(self, card_to):
         if Card.check_card_number(card_to):  # Check is card number pass Luhn algorithm
