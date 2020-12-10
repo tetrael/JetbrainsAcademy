@@ -42,7 +42,7 @@ class Bank:
                             self.increase_balance(int(input("Enter income:\n")))
                             print("Income was added!\n")
                         elif menu_item == 3:
-                            self.do_transfer(Card(input("Enter card number:\n")))
+                            self.do_transfer(input("Enter card number:\n"))
                         elif menu_item == 4:
                             self.close_account()
                             print("The account has been closed!\n")
@@ -87,18 +87,17 @@ class Bank:
         self.cursor.execute(sql_query)
         self.db_conn.commit()
 
-    def check_current_balance(self):
+    def check_current_balance(self, card_number=None):
         sql_query = f"""SELECT * FROM card 
-                        WHERE number = {self.selected_card[0]} 
-                        AND pin = {self.selected_card[1]}"""
+                        WHERE number = {self.selected_card[0] if card_number is None else card_number}"""
         self.cursor.execute(sql_query)
         balance = self.cursor.fetchone()
         return balance[3]
 
     def increase_balance(self, income, card_to=None):
-        balance = int(self.check_current_balance())
+        balance = int(self.check_current_balance(card_to))
         sql_query = f"""UPDATE card 
-                        SET balance = {income + balance}
+                        SET balance = {balance + income}
                         WHERE number = {self.selected_card[0] if card_to is None else card_to}"""
         self.cursor.execute(sql_query)
         self.db_conn.commit()
@@ -118,12 +117,12 @@ class Bank:
         return True if result[1] == card_number else False
 
     def do_transfer(self, card_to):
-        if card_to.check_card_number(card_to.number):  # Check is card number pass Luhn algorithm
+        if Card.check_card_number(card_to):  # Check is card number pass Luhn algorithm
             if self.is_card_in_database(card_to):
                 amount_to_transfer = int(input("Enter how much money you want to transfer:\n"))
                 if self.check_current_balance() >= amount_to_transfer:
-                    self.decrease_balance(self.selected_card[0], amount_to_transfer)
-                    self.increase_balance(amount_to_transfer)
+                    self.decrease_balance(amount_to_transfer)
+                    self.increase_balance(amount_to_transfer, card_to)
                     print("Success!")
                 else:
                     print("Not enough money!")

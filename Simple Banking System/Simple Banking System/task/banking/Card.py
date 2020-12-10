@@ -38,9 +38,10 @@ class Card:
             if (checksum + x) % 10 == 0:
                 return str(x)
 
-    def check_card_number(self, card_number):
+    @staticmethod
+    def check_card_number(card_number):
         card_number = list(card_number)
         current_checksum = int(card_number[-1])
         del card_number[-1]
-        calculated_checksum = int(self.calculate_checksum(card_number))
+        calculated_checksum = int(Card.calculate_checksum(card_number))
         return True if calculated_checksum == current_checksum else False
