@@ -2,25 +2,25 @@ import string
 import secrets
 
 
-class BankAccount:
+class Card:
     def __init__(self, number=None, pin=None):
         self.pin = self.generate_pin() if pin is None else pin
         self.identifiers = self.generate_identifiers() if number is None else None
         self.number = self.card_number() if number is None else number
-        print("Your card has been created")
+        print("\nYour card has been created")
         print("Your card number:\n" + self.number)
         print("Your card PIN:\n" + self.pin + "\n")
 
     @staticmethod
     def generate_pin():
-        return ''.join(secrets.choice(string.digits) for i in range(4))
+        return ''.join(secrets.choice(string.digits) for _ in range(4))
 
     def generate_identifiers(self):
         self.number = dict()
         self.number["IIN"] = '400000'
-        self.number["Account Identifier"] = ''.join(secrets.choice(string.digits) for i in range(9))
+        self.number["Account Identifier"] = ''.join(secrets.choice(string.digits) for _ in range(9))
         self.number["Checksum"] = self.calculate_checksum(str(self.number["IIN"]
-                                                    + self.number["Account Identifier"]))
+                                                              + self.number["Account Identifier"]))
         return self.number
 
     def card_number(self):

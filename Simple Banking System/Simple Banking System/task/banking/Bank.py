@@ -1,4 +1,4 @@
-from BankAccount import BankAccount
+from Card import Card
 import sqlite3
 
 
@@ -7,14 +7,14 @@ class Bank:
         self.db_conn = db_conn
         self.cursor = self.db_conn.cursor()
         self.menu_exit = False
-        self.chosen_account = None # For login purpose
+        self.selected_card = None  # For login purpose
 
     @staticmethod
     def print_main_menu():
         print("\n1. Create an account")
         print("2. Log into account")
         print("3. Show database")
-        print("0. Exit")
+        print("0. Exit\n")
 
     @staticmethod
     def print_login_menu():
@@ -23,7 +23,7 @@ class Bank:
         print("3. Do transfer")
         print("4. Close account")
         print("5. Log out")
-        print("0. Exit")
+        print("0. Exit\n")
 
     def menu(self):
         while not self.menu_exit:
@@ -39,16 +39,15 @@ class Bank:
                         if menu_item == 1:
                             print(f"Balance: {self.check_current_balance()}\n")
                         elif menu_item == 2:
-                            income = int(input("Enter income:\n"))
-                            self.increase_balance(income)
+                            self.increase_balance(int(input("Enter income:\n")))
                             print("Income was added!\n")
                         elif menu_item == 3:
-                            self.do_transfer()
+                            self.do_transfer(Card(input("Enter card number:\n")))
                         elif menu_item == 4:
                             print("Not implemented yet!\n")
                             pass
                         elif menu_item == 5:
-                            self.chosen_account = None
+                            self.selected_card = None
                             print("You have successfully logged out!")
                             break
                         elif menu_item == 0:
@@ -70,44 +69,44 @@ class Bank:
         pin = input("Enter your PIN:\n")
 
         self.cursor.execute("SELECT * FROM card")
-        accounts = self.cursor.fetchall()
+        cards = self.cursor.fetchall()
 
-        for account in accounts:
-                if account[1] == number and account[2] == pin:
-                    self.chosen_account = (account[1], account[2])
+        for card in cards:
+                if card[1] == number and card[2] == pin:
+                    self.selected_card = (card[1], card[2])
                     print("You have successfully logged in!\n")
                     return True
         else:
             return False
 
     def insert_card(self):
-        account = BankAccount()
+        card = Card()
         sql_query = f"INSERT INTO card (number, pin) VALUES( " \
-                    + account.number + "," + account.pin + ");"
+                    + card.number + "," + card.pin + ");"
         self.cursor.execute(sql_query)
         self.db_conn.commit()
 
     def check_current_balance(self):
         sql_query = f"""SELECT * FROM card 
-                        WHERE number = {self.chosen_account[0]} 
-                        AND pin = {self.chosen_account[1]}"""
+                        WHERE number = {self.selected_card[0]} 
+                        AND pin = {self.selected_card[1]}"""
         self.cursor.execute(sql_query)
         balance = self.cursor.fetchone()
         return balance[3]
 
-    def increase_balance(self, income):
+    def increase_balance(self, income, card_to=None):
         balance = int(self.check_current_balance())
         sql_query = f"""UPDATE card 
                         SET balance = {income + balance}
-                        WHERE number = {self.chosen_account[0]}"""
+                        WHERE number = {self.selected_card[0] if card_to is None else card_to}"""
         self.cursor.execute(sql_query)
         self.db_conn.commit()
 
-    def decrease_balance(self, from_account, outcome):
+    def decrease_balance(self, outcome):
         balance = int(self.check_current_balance())
         sql_query = f"""UPDATE card 
                         SET balance = {balance - outcome}
-                        WHERE number = {from_account}"""
+                        WHERE number = {self.selected_card[0]}"""
         self.cursor.execute(sql_query)
         self.db_conn.commit()
 
@@ -117,16 +116,14 @@ class Bank:
         result = self.cursor.fetchone()
         return True if result[1] == card_number else False
 
-    def do_transfer(self):
-        card_number = input("Enter card number:\n")
-        account_to = BankAccount(card_number)
-        account_from = BankAccount(self.chosen_account[0], self.chosen_account[1])
-        if account_to.check_card_number(card_number):  # Check is card number is correct
-            if self.is_card_in_database(card_number):
+    def do_transfer(self, card_to):
+        if card_to.check_card_number(card_to.number):  # Check is card number pass Luhn algorithm
+            if self.is_card_in_database(card_to):
                 amount_to_transfer = int(input("Enter how much money you want to transfer:\n"))
                 if self.check_current_balance() >= amount_to_transfer:
-                    self.decrease_balance(self.chosen_account[0], amount_to_transfer)
+                    self.decrease_balance(self.selected_card[0], amount_to_transfer)
                     self.increase_balance(amount_to_transfer)
+                    print("Success!")
                 else:
                     print("Not enough money!")
             else:
