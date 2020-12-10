@@ -44,8 +44,9 @@ class Bank:
                         elif menu_item == 3:
                             self.do_transfer(Card(input("Enter card number:\n")))
                         elif menu_item == 4:
-                            print("Not implemented yet!\n")
-                            pass
+                            self.close_account()
+                            print("The account has been closed!\n")
+                            break
                         elif menu_item == 5:
                             self.selected_card = None
                             print("You have successfully logged out!")
@@ -81,8 +82,8 @@ class Bank:
 
     def insert_card(self):
         card = Card()
-        sql_query = f"INSERT INTO card (number, pin) VALUES( " \
-                    + card.number + "," + card.pin + ");"
+        sql_query = f"INSERT INTO card (number, pin) VALUES( '" \
+                    + card.number + "','" + card.pin + "');"
         self.cursor.execute(sql_query)
         self.db_conn.commit()
 
@@ -130,3 +131,9 @@ class Bank:
                 print("Such a card does not exist.")
         else:
             print("Probably you made a mistake in the card number. Please try again!")
+
+    def close_account(self):
+        sql_query = f"""DELETE FROM card 
+                        WHERE number = {self.selected_card[0]}"""
+        self.cursor.execute(sql_query)
+        self.db_conn.commit()
